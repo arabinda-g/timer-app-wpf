@@ -21,9 +21,12 @@ namespace Timer_App
     {
         public string InputValue { get; private set; }
 
-        public InputDialog()
+        public InputDialog(string defaultValue = "")
         {
             InitializeComponent();
+
+            // Set the TextBox text to the default value
+            txtInput.Text = defaultValue;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

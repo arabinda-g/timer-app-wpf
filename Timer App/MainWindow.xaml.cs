@@ -150,7 +150,7 @@ namespace Timer_App
 
         private void mnuChangeTargetTime_Click(object sender, EventArgs e)
         {
-            var inputDialog = new InputDialog();
+            var inputDialog = new InputDialog(defaultTargetTime.ToString(@"hh\:mm"));
             inputDialog.Icon = this.Icon;
             if (inputDialog.ShowDialog() == true)
             {
