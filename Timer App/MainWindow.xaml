@@ -9,7 +9,7 @@
         WindowStartupLocation="Manual" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         OpacityMask="Black" Topmost="True" ResizeMode="NoResize">
     <Grid>
-        <Border Background="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" CornerRadius="10" Padding="10">
+        <Border Background="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" CornerRadius="10" Padding="10" MouseLeftButtonDown="OnBorderMouseDown" MouseMove="OnBorderMouseMove" MouseLeftButtonUp="OnBorderMouseUp">
             <TextBlock x:Name="timeText" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
         </Border>
     </Grid>

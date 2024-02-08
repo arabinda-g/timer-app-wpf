@@ -11,6 +11,9 @@ namespace Timer_App
     {
         private DispatcherTimer timer;
         private const string SettingsPath = "windowPosition.json";
+        private bool isDragging = false;
+        private Point startPoint;
+
 
         public MainWindow()
         {
@@ -51,11 +54,19 @@ namespace Timer_App
         private void LoadWindowPosition()
         {
             // Logic to load window position from SettingsPath and set this.Top and this.Left
+
+            // Load window position from settings
+            this.Top = Properties.Settings.Default.WindowTop;
+            this.Left = Properties.Settings.Default.WindowLeft;
         }
 
         private void SaveWindowPosition()
         {
             // Logic to save window position to SettingsPath
+            // Save window position to settings
+            Properties.Settings.Default.WindowTop = this.Top;
+            Properties.Settings.Default.WindowLeft = this.Left;
+            Properties.Settings.Default.Save();
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e)
@@ -80,6 +91,37 @@ namespace Timer_App
             if (e.Category == UserPreferenceCategory.General)
             {
                 ApplyTheme();
+            }
+        }
+        private void OnBorderMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                isDragging = true;
+                startPoint = e.GetPosition(this);
+            }
+        }
+
+        private void OnBorderMouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragging)
+            {
+                Point mousePosition = e.GetPosition(this);
+                double offsetX = mousePosition.X - startPoint.X;
+                double offsetY = mousePosition.Y - startPoint.Y;
+
+                this.Left += offsetX;
+                this.Top += offsetY;
+
+                startPoint = mousePosition;
+            }
+        }
+
+        private void OnBorderMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                isDragging = false;
             }
         }
     }
