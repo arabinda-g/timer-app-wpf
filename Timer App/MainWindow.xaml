@@ -5,8 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Timer_App"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Countdown Timer" Height="100" Width="200"
+        WindowStartupLocation="Manual" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        OpacityMask="Black" Topmost="True" ResizeMode="NoResize">
     <Grid>
-
+        <Border Background="{DynamicResource {x:Static SystemColors.WindowFrameBrushKey}}" CornerRadius="10" Padding="10">
+            <TextBlock x:Name="timeText" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+        </Border>
     </Grid>
 </Window>
