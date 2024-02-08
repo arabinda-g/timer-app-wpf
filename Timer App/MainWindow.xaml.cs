@@ -10,6 +10,8 @@ namespace Timer_App
     public partial class MainWindow : Window
     {
         private DispatcherTimer timer;
+        private bool isDarkTheme = false;
+        private bool isTimeUp = false;
 
         public MainWindow()
         {
@@ -38,12 +40,25 @@ namespace Timer_App
             var targetTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 22, 0, 0);
             if (currentTime >= targetTime)
             {
+                isTimeUp = true;
                 targetTime = currentTime < targetTime ? targetTime : targetTime.AddDays(1);
                 this.Background = new SolidColorBrush(Colors.Red);
+                timeText.Foreground = new SolidColorBrush(Colors.White);
             }
             else
             {
-                this.Background = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32)); // Default background for dark mode
+                isTimeUp = false;
+
+                if (isDarkTheme)
+                {
+                    this.Background = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32)); // Dark theme background
+                    timeText.Foreground = new SolidColorBrush(Colors.White); // Light text for dark background
+                }
+                else
+                {
+                    this.Background = new SolidColorBrush(Colors.WhiteSmoke); // Light theme background
+                    timeText.Foreground = new SolidColorBrush(Colors.Black); // Dark text for light background
+                }
             }
 
             var timeLeft = (currentTime >= targetTime ? currentTime - targetTime : targetTime - currentTime);
@@ -52,8 +67,6 @@ namespace Timer_App
 
         private void LoadWindowPosition()
         {
-            // Logic to load window position from SettingsPath and set this.Top and this.Left
-
             // Load window position from settings
             this.Top = Properties.Settings.Default.WindowTop;
             this.Left = Properties.Settings.Default.WindowLeft;
@@ -61,7 +74,6 @@ namespace Timer_App
 
         private void SaveWindowPosition()
         {
-            // Logic to save window position to SettingsPath
             // Save window position to settings
             Properties.Settings.Default.WindowTop = this.Top;
             Properties.Settings.Default.WindowLeft = this.Left;
@@ -83,7 +95,12 @@ namespace Timer_App
         private void ApplyTheme()
         {
             // Logic to check Windows theme and apply it to the app
-            var isDarkTheme = IsDarkThemeEnabled();
+            isDarkTheme = IsDarkThemeEnabled();
+
+            if (isTimeUp)
+            {
+                return;
+            }
 
             if (isDarkTheme)
             {
