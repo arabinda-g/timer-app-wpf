@@ -10,10 +10,6 @@ namespace Timer_App
     public partial class MainWindow : Window
     {
         private DispatcherTimer timer;
-        private const string SettingsPath = "windowPosition.json";
-        private bool isDragging = false;
-        private Point startPoint;
-
 
         public MainWindow()
         {
@@ -23,6 +19,9 @@ namespace Timer_App
             SetUpTimer();
             SystemEvents.UserPreferenceChanged += SystemEvents_UserPreferenceChanged;
             ApplyTheme();
+
+            this.MouseDown += Window_MouseDown;
+            this.Closed += Window_Closed;
         }
 
         private void SetUpTimer()
@@ -37,18 +36,18 @@ namespace Timer_App
         {
             var currentTime = DateTime.Now;
             var targetTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 22, 0, 0);
-            if (currentTime > targetTime)
+            if (currentTime >= targetTime)
             {
-                targetTime = targetTime.AddDays(1);
-                this.Background = Brushes.Red;
+                targetTime = currentTime < targetTime ? targetTime : targetTime.AddDays(1);
+                this.Background = new SolidColorBrush(Colors.Red);
             }
             else
             {
-                this.Background = Brushes.Black; // Default background
+                this.Background = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32)); // Default background for dark mode
             }
 
-            var timeLeft = targetTime - currentTime;
-            timeText.Text = (currentTime > targetTime ? "-" : "") + timeLeft.ToString(@"hh\:mm");
+            var timeLeft = (currentTime >= targetTime ? currentTime - targetTime : targetTime - currentTime);
+            timeText.Text = (currentTime >= targetTime ? "-" : "") + timeLeft.ToString(@"hh\:mm");
         }
 
         private void LoadWindowPosition()
@@ -84,6 +83,36 @@ namespace Timer_App
         private void ApplyTheme()
         {
             // Logic to check Windows theme and apply it to the app
+            var isDarkTheme = IsDarkThemeEnabled();
+
+            if (isDarkTheme)
+            {
+                this.Background = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32)); // Dark theme background
+                timeText.Foreground = new SolidColorBrush(Colors.White); // Light text for dark background
+            }
+            else
+            {
+                this.Background = new SolidColorBrush(Colors.WhiteSmoke); // Light theme background
+                timeText.Foreground = new SolidColorBrush(Colors.Black); // Dark text for light background
+            }
+        }
+
+        private static bool IsDarkThemeEnabled()
+        {
+            const string RegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
+            const string RegistryValueName = "AppsUseLightTheme";
+
+            using (var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath))
+            {
+                object registryValueObject = key?.GetValue(RegistryValueName);
+                if (registryValueObject == null)
+                {
+                    return false; // Default to light theme if the registry key is not found
+                }
+
+                int registryValue = (int)registryValueObject;
+                return registryValue <= 0; // If the value is 0, dark theme is enabled. Otherwise, light theme is enabled.
+            }
         }
 
         private void SystemEvents_UserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
@@ -91,37 +120,6 @@ namespace Timer_App
             if (e.Category == UserPreferenceCategory.General)
             {
                 ApplyTheme();
-            }
-        }
-        private void OnBorderMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                isDragging = true;
-                startPoint = e.GetPosition(this);
-            }
-        }
-
-        private void OnBorderMouseMove(object sender, MouseEventArgs e)
-        {
-            if (isDragging)
-            {
-                Point mousePosition = e.GetPosition(this);
-                double offsetX = mousePosition.X - startPoint.X;
-                double offsetY = mousePosition.Y - startPoint.Y;
-
-                this.Left += offsetX;
-                this.Top += offsetY;
-
-                startPoint = mousePosition;
-            }
-        }
-
-        private void OnBorderMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                isDragging = false;
             }
         }
     }
