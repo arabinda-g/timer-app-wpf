@@ -49,13 +49,25 @@ namespace Timer_App.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("24")]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
         public double FontSize {
             get {
                 return ((double)(this["FontSize"]));
             }
             set {
                 this["FontSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("22:00:00")]
+        public global::System.TimeSpan TargetTime {
+            get {
+                return ((global::System.TimeSpan)(this["TargetTime"]));
+            }
+            set {
+                this["TargetTime"] = value;
             }
         }
     }

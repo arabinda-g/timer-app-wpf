@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Countdown Timer" Height="100" Width="200"
         WindowStartupLocation="Manual" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
-        OpacityMask="Black" Topmost="True" ResizeMode="NoResize">
+        OpacityMask="Black" Topmost="True" ResizeMode="NoResize" ShowInTaskbar="False">
     <Grid>
         <Border x:Name="MainBorder" CornerRadius="10" Padding="0">
             <TextBlock x:Name="timeText" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Text="00:00"/>

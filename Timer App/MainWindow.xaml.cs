@@ -25,6 +25,7 @@ namespace Timer_App
         private bool isDarkTheme = false;
         private bool isTimeUp = false;
         private bool previousFlag = false;
+        private System.TimeSpan defaultTargetTime;
 
         public MainWindow()
         {
@@ -32,6 +33,7 @@ namespace Timer_App
 
             // Convert icon from resources and set it for the MainWindow
             this.Icon = IconToImageSource(Properties.Resources.HourglassIcon);
+            defaultTargetTime = Properties.Settings.Default.TargetTime;
 
             LoadFontSize();
             InitializeTrayIcon();
@@ -125,6 +127,7 @@ namespace Timer_App
             };
 
             var contextMenu = new ContextMenuStrip();
+            contextMenu.Items.Add("Change target time...", null, mnuChangeTargetTime_Click);
             contextMenu.Items.Add("Reset window position", null, ResetWindowPosition);
             contextMenu.Items.Add("Exit", null, ExitApplication);
 
@@ -143,6 +146,36 @@ namespace Timer_App
         {
             trayIcon.Visible = false;
             Application.Current.Shutdown();
+        }
+
+        private void mnuChangeTargetTime_Click(object sender, EventArgs e)
+        {
+            var inputDialog = new InputDialog();
+            inputDialog.Icon = this.Icon;
+            if (inputDialog.ShowDialog() == true)
+            {
+                // InputValue format: "00:00"
+                var timeParts = inputDialog.InputValue.Split(':');
+
+                // Convert TargetTime (System.TimeSpan)
+                if (timeParts.Length == 2 && int.TryParse(timeParts[0], out int hours) && int.TryParse(timeParts[1], out int minutes))
+                {
+                    defaultTargetTime = new TimeSpan(hours, minutes, 0);
+                    Properties.Settings.Default.TargetTime = new TimeSpan(hours, minutes, 0);
+                    Properties.Settings.Default.Save();
+
+                    // Restart the timer
+                    timer.Stop();
+                    SetUpTimer();
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("Invalid time format. Please use HH:MM format.", "Invalid Time", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                    // Show the input dialog again
+                    mnuChangeTargetTime_Click(sender, e);
+                }
+            }
         }
 
         private void TrayIcon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -181,9 +214,9 @@ namespace Timer_App
         private void Timer_Tick(object sender, EventArgs e)
         {
             var currentTime = DateTime.Now;
-            var targetTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 22, 0, 0);
+            var targetTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, defaultTargetTime.Hours, defaultTargetTime.Minutes, 0);
 
-            if (currentTime.Hour >= 22)
+            if (currentTime.Hour >= defaultTargetTime.Hours)
             {
                 // If the current time is after 10 PM, adjust the target time to today's date.
                 isTimeUp = true;
@@ -239,6 +272,15 @@ namespace Timer_App
 
         private void LoadWindowPosition()
         {
+            // Check if it's the first time the app is running
+            if (Properties.Settings.Default.WindowTop == 0 && Properties.Settings.Default.WindowLeft == 0)
+            {
+                // Center the window on the screen
+                this.Left = (SystemParameters.WorkArea.Width - this.Width) / 2 + SystemParameters.WorkArea.Left;
+                this.Top = (SystemParameters.WorkArea.Height - this.Height) / 2 + SystemParameters.WorkArea.Top;
+                return;
+            }
+
             // Load window position from settings
             this.Top = Properties.Settings.Default.WindowTop;
             this.Left = Properties.Settings.Default.WindowLeft;

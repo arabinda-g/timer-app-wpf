@@ -9,7 +9,10 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="FontSize" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">24</Value>
+      <Value Profile="(Default)">100</Value>
+    </Setting>
+    <Setting Name="TargetTime" Type="System.TimeSpan" Scope="User">
+      <Value Profile="(Default)">22:00:00</Value>
     </Setting>
   </Settings>
 </SettingsFile>
