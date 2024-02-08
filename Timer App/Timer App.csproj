@@ -7,10 +7,15 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Resources\HourglassIcon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="hourglass.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\HourglassIcon.ico" />
   </ItemGroup>
 
   <ItemGroup>
