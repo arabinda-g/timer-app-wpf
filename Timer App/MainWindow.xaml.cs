@@ -61,7 +61,7 @@ namespace Timer_App
 
         private void LoadFontSize()
         {
-            // Example loading font size (You'll need to implement the actual loading logic)
+            // Loading font size
             double fontSize = Properties.Settings.Default.FontSize;
             AdjustFontSizeAndWindowSize(fontSize);
         }
@@ -72,8 +72,8 @@ namespace Timer_App
             timeText.FontSize = fontSize;
 
             // Adjust window size based on font size
-            this.Width = fontSize * 4; // Example calculation, adjust as necessary
-            this.Height = fontSize * 2; // Example calculation, adjust as necessary
+            this.Width = fontSize * 4;
+            this.Height = fontSize * 2;
 
             // Save the font size to settings
             Properties.Settings.Default.FontSize = fontSize;
@@ -86,11 +86,11 @@ namespace Timer_App
             if (Keyboard.Modifiers == ModifierKeys.Control)
             {
                 var currentSize = timeText.FontSize;
-                if (e.Delta > 0 && currentSize < MAX_FONT_SIZE) // Define MAX_FONT_SIZE
+                if (e.Delta > 0 && currentSize < MAX_FONT_SIZE)
                 {
                     AdjustFontSizeAndWindowSize(currentSize + 1); // Increment font size
                 }
-                else if (e.Delta < 0 && currentSize > MIN_FONT_SIZE) // Define MIN_FONT_SIZE
+                else if (e.Delta < 0 && currentSize > MIN_FONT_SIZE)
                 {
                     AdjustFontSizeAndWindowSize(currentSize - 1); // Decrement font size
                 }
@@ -172,7 +172,7 @@ namespace Timer_App
             {
                 // If the current time is after 10 PM, adjust the target time to today's date.
                 isTimeUp = true;
-                this.Background = new SolidColorBrush(Colors.Red);
+                MainBorder.Background = new SolidColorBrush(Colors.Red);
                 timeText.Foreground = new SolidColorBrush(Colors.White);
             }
             else
@@ -181,12 +181,12 @@ namespace Timer_App
                 isTimeUp = false;
                 if (isDarkTheme)
                 {
-                    this.Background = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32)); // Dark theme background
+                    MainBorder.Background = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32)); // Dark theme background
                     timeText.Foreground = new SolidColorBrush(Colors.White); // Light text for dark background
                 }
                 else
                 {
-                    this.Background = new SolidColorBrush(Colors.WhiteSmoke); // Light theme background
+                    MainBorder.Background = new SolidColorBrush(Colors.WhiteSmoke); // Light theme background
                     timeText.Foreground = new SolidColorBrush(Colors.Black); // Dark text for light background
                 }
             }
@@ -254,12 +254,12 @@ namespace Timer_App
 
             if (isDarkTheme)
             {
-                this.Background = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32)); // Dark theme background
+                MainBorder.Background = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32)); // Dark theme background
                 timeText.Foreground = new SolidColorBrush(Colors.White); // Light text for dark background
             }
             else
             {
-                this.Background = new SolidColorBrush(Colors.WhiteSmoke); // Light theme background
+                MainBorder.Background = new SolidColorBrush(Colors.WhiteSmoke); // Light theme background
                 timeText.Foreground = new SolidColorBrush(Colors.Black); // Dark text for light background
             }
         }
