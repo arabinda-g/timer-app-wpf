@@ -38,17 +38,18 @@ namespace Timer_App
         {
             var currentTime = DateTime.Now;
             var targetTime = new DateTime(currentTime.Year, currentTime.Month, currentTime.Day, 22, 0, 0);
-            if (currentTime >= targetTime)
+
+            if (currentTime.Hour >= 22)
             {
+                // If the current time is after 10 PM, adjust the target time to today's date.
                 isTimeUp = true;
-                targetTime = currentTime < targetTime ? targetTime : targetTime.AddDays(1);
                 this.Background = new SolidColorBrush(Colors.Red);
                 timeText.Foreground = new SolidColorBrush(Colors.White);
             }
             else
             {
+                // Before 10 PM
                 isTimeUp = false;
-
                 if (isDarkTheme)
                 {
                     this.Background = new SolidColorBrush(Color.FromArgb(255, 32, 32, 32)); // Dark theme background
@@ -61,9 +62,29 @@ namespace Timer_App
                 }
             }
 
-            var timeLeft = (currentTime >= targetTime ? currentTime - targetTime : targetTime - currentTime);
-            timeText.Text = (currentTime >= targetTime ? "-" : "") + timeLeft.ToString(@"hh\:mm");
+            TimeSpan timeSpan;
+            string prefix;
+            if (isTimeUp)
+            {
+                // Calculate the time since 10 PM
+                timeSpan = currentTime - targetTime;
+                prefix = "-";
+            }
+            else
+            {
+                // Calculate the time until 10 PM
+                timeSpan = targetTime - currentTime;
+                prefix = "";
+            }
+
+            // Ensure days are considered for the calculation if needed
+            int totalMinutes = (int)timeSpan.TotalMinutes;
+            int hours = totalMinutes / 60;
+            int minutes = Math.Abs(totalMinutes % 60); // Use absolute value to avoid negative minutes
+
+            timeText.Text = $"{prefix}{hours:D2}:{minutes:D2}";
         }
+
 
         private void LoadWindowPosition()
         {
