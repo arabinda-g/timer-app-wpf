@@ -46,5 +46,17 @@ namespace Timer_App.Properties {
                 this["WindowLeft"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("24")]
+        public double FontSize {
+            get {
+                return ((double)(this["FontSize"]));
+            }
+            set {
+                this["FontSize"] = value;
+            }
+        }
     }
 }

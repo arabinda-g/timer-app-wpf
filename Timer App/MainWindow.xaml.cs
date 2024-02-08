@@ -4,18 +4,36 @@ using System.Windows.Input;
 using Microsoft.Win32;
 using System.Windows.Threading;
 using System.Windows.Media;
+using System.Windows.Forms;
+using Application = System.Windows.Application;
+using System.Drawing;
+using System.IO;
+using System.Windows.Media.Imaging;
+using Color = System.Windows.Media.Color;
 
 namespace Timer_App
 {
     public partial class MainWindow : Window
     {
+        // Define MAX_FONT_SIZE and MIN_FONT_SIZE here
+        private const int MAX_FONT_SIZE = 100;
+        private const int MIN_FONT_SIZE = 10;
+
         private DispatcherTimer timer;
+        private NotifyIcon trayIcon;
+
         private bool isDarkTheme = false;
         private bool isTimeUp = false;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            // Convert icon from resources and set it for the MainWindow
+            this.Icon = IconToImageSource(Properties.Resources.HourglassIcon);
+
+            LoadFontSize();
+            InitializeTrayIcon();
 
             LoadWindowPosition();
             SetUpTimer();
@@ -25,6 +43,117 @@ namespace Timer_App
             this.MouseDown += Window_MouseDown;
             this.Closed += Window_Closed;
         }
+
+        private ImageSource IconToImageSource(Icon icon)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                // Save the icon to a memory stream in PNG format
+                icon.Save(stream);
+
+                // Create a BitmapDecoder from the memory stream
+                BitmapDecoder decoder = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+
+                // Return the first frame of the decoded image as an ImageSource
+                return decoder.Frames[0];
+            }
+        }
+
+        private void LoadFontSize()
+        {
+            // Example loading font size (You'll need to implement the actual loading logic)
+            double fontSize = Properties.Settings.Default.FontSize;
+            AdjustFontSizeAndWindowSize(fontSize);
+        }
+
+        private void AdjustFontSizeAndWindowSize(double fontSize)
+        {
+            // Set the font size
+            timeText.FontSize = fontSize;
+
+            // Adjust window size based on font size
+            this.Width = fontSize * 4; // Example calculation, adjust as necessary
+            this.Height = fontSize * 2; // Example calculation, adjust as necessary
+
+            // Save the font size to settings
+            Properties.Settings.Default.FontSize = fontSize;
+            Properties.Settings.Default.Save();
+        }
+
+        protected override void OnMouseWheel(MouseWheelEventArgs e)
+        {
+            base.OnMouseWheel(e);
+            if (Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                var currentSize = timeText.FontSize;
+                if (e.Delta > 0 && currentSize < MAX_FONT_SIZE) // Define MAX_FONT_SIZE
+                {
+                    AdjustFontSizeAndWindowSize(currentSize + 1); // Increment font size
+                }
+                else if (e.Delta < 0 && currentSize > MIN_FONT_SIZE) // Define MIN_FONT_SIZE
+                {
+                    AdjustFontSizeAndWindowSize(currentSize - 1); // Decrement font size
+                }
+            }
+        }
+
+
+
+        private void InitializeTrayIcon()
+        {
+            trayIcon = new NotifyIcon
+            {
+                // Load icon from resources
+                Icon = Properties.Resources.HourglassIcon,
+
+                Visible = true
+            };
+
+            var contextMenu = new ContextMenuStrip();
+            contextMenu.Items.Add("Reset window position", null, ResetWindowPosition);
+            contextMenu.Items.Add("Exit", null, ExitApplication);
+
+            trayIcon.ContextMenuStrip = contextMenu;
+            trayIcon.MouseClick += TrayIcon_MouseClick;
+        }
+
+        private void ResetWindowPosition(object sender, EventArgs e)
+        {
+            // Logic to reset window position
+            this.Left = (SystemParameters.WorkArea.Width - this.Width) / 2 + SystemParameters.WorkArea.Left;
+            this.Top = (SystemParameters.WorkArea.Height - this.Height) / 2 + SystemParameters.WorkArea.Top;
+        }
+
+        private void ExitApplication(object sender, EventArgs e)
+        {
+            trayIcon.Visible = false;
+            Application.Current.Shutdown();
+        }
+
+        private void TrayIcon_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Middle)
+            {
+                ExitApplication(sender, e);
+            }
+        }
+
+
+
+
+
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            base.OnMouseDown(e);
+            if (e.ChangedButton == MouseButton.Middle)
+            {
+                ExitApplication(this, e);
+            }
+        }
+
+
+
+
 
         private void SetUpTimer()
         {
