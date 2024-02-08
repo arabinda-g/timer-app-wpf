@@ -24,6 +24,7 @@ namespace Timer_App
 
         private bool isDarkTheme = false;
         private bool isTimeUp = false;
+        private bool previousFlag = false;
 
         public MainWindow()
         {
@@ -71,9 +72,23 @@ namespace Timer_App
             // Set the font size
             timeText.FontSize = fontSize;
 
+            // Calculate margin and padding in percentage
+            timeText.Margin = new Thickness(0, -0.1 * fontSize, 0, 0);
+            MainBorder.Padding = new Thickness(0, 0.01 * fontSize, 0, 0);
+
             // Adjust window size based on font size
-            this.Width = fontSize * 4;
-            this.Height = fontSize * 2;
+            //this.Width = fontSize * 3;
+            this.Height = fontSize;
+
+            // Recalculate the window size based on the time
+            if (isTimeUp)
+            {
+                this.Width = fontSize * 3;
+            }
+            else
+            {
+                this.Width = fontSize * 2.6;
+            }
 
             // Save the font size to settings
             Properties.Settings.Default.FontSize = fontSize;
@@ -212,6 +227,13 @@ namespace Timer_App
             int minutes = Math.Abs(totalMinutes % 60); // Use absolute value to avoid negative minutes
 
             timeText.Text = $"{prefix}{hours:D2}:{minutes:D2}";
+
+            // If the time is up, resize the window
+            if (previousFlag != isTimeUp)
+            {
+                previousFlag = isTimeUp;
+                LoadFontSize();
+            }
         }
 
 

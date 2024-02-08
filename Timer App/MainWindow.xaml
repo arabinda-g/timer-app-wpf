@@ -9,7 +9,7 @@
         WindowStartupLocation="Manual" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         OpacityMask="Black" Topmost="True" ResizeMode="NoResize">
     <Grid>
-        <Border x:Name="MainBorder" CornerRadius="10" Padding="10">
+        <Border x:Name="MainBorder" CornerRadius="10" Padding="0">
             <TextBlock x:Name="timeText" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Text="00:00"/>
         </Border>
     </Grid>
