@@ -127,6 +127,70 @@ namespace Timer_App
             };
 
             var contextMenu = new ContextMenuStrip();
+
+            // Add options to change the theme
+            contextMenu.Items.Add("Light theme", null, (sender, e) =>
+            {
+                isDarkTheme = false;
+                ApplyTheme();
+
+                // Save the theme to settings
+                Properties.Settings.Default.Theme = "Light";
+                Properties.Settings.Default.Save();
+
+                // Set checkmark for the light theme
+                ((ToolStripMenuItem)contextMenu.Items[0]).Checked = true;
+                ((ToolStripMenuItem)contextMenu.Items[1]).Checked = false;
+                ((ToolStripMenuItem)contextMenu.Items[2]).Checked = false;
+            });
+            contextMenu.Items.Add("Dark theme", null, (sender, e) =>
+            {
+                isDarkTheme = true;
+                ApplyTheme();
+
+                // Save the theme to settings
+                Properties.Settings.Default.Theme = "Dark";
+                Properties.Settings.Default.Save();
+
+                // Set checkmark for the dark theme
+                ((ToolStripMenuItem)contextMenu.Items[0]).Checked = false;
+                ((ToolStripMenuItem)contextMenu.Items[1]).Checked = true;
+                ((ToolStripMenuItem)contextMenu.Items[2]).Checked = false;
+            });
+
+            // Add option for system theme
+            contextMenu.Items.Add("System theme", null, (sender, e) =>
+            {
+                isDarkTheme = IsDarkThemeEnabled();
+                ApplyTheme();
+
+                // Save the theme to settings
+                Properties.Settings.Default.Theme = "System";
+                Properties.Settings.Default.Save();
+
+                // Set checkmark for the system theme
+                ((ToolStripMenuItem)contextMenu.Items[0]).Checked = false;
+                ((ToolStripMenuItem)contextMenu.Items[1]).Checked = false;
+                ((ToolStripMenuItem)contextMenu.Items[2]).Checked = true;
+            });
+
+            // Add checkmark to the current theme
+            if (Properties.Settings.Default.Theme == "Light")
+            {
+                ((ToolStripMenuItem)contextMenu.Items[0]).Checked = true;
+            }
+            else if (Properties.Settings.Default.Theme == "Dark")
+            {
+                ((ToolStripMenuItem)contextMenu.Items[1]).Checked = true;
+            }
+            else
+            {
+                ((ToolStripMenuItem)contextMenu.Items[2]).Checked = true;
+            }
+
+            // Add a separator
+            contextMenu.Items.Add(new ToolStripSeparator());
+
             contextMenu.Items.Add("Change target time...", null, mnuChangeTargetTime_Click);
             contextMenu.Items.Add("Reset window position", null, ResetWindowPosition);
             contextMenu.Items.Add("Exit", null, ExitApplication);
@@ -308,9 +372,6 @@ namespace Timer_App
 
         private void ApplyTheme()
         {
-            // Logic to check Windows theme and apply it to the app
-            isDarkTheme = IsDarkThemeEnabled();
-
             if (isTimeUp)
             {
                 return;
@@ -350,7 +411,13 @@ namespace Timer_App
         {
             if (e.Category == UserPreferenceCategory.General)
             {
-                ApplyTheme();
+                if (Properties.Settings.Default.Theme == "System")
+                {
+                    // Logic to check Windows theme and apply it to the app
+                    isDarkTheme = IsDarkThemeEnabled();
+
+                    ApplyTheme();
+                }
             }
         }
     }
